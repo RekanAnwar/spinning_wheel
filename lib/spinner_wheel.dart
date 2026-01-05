@@ -21,6 +21,7 @@ class SpinnerWheel extends StatefulWidget {
   final double? imageWidth;
   final TextStyle? labelStyle;
   final bool showStand;
+  final AnimationController? zoomController;
 
   const SpinnerWheel({
     super.key,
@@ -35,6 +36,7 @@ class SpinnerWheel extends StatefulWidget {
     this.imageWidth,
     this.labelStyle,
     this.showStand = true,
+    this.zoomController,
   });
 
   @override
@@ -184,6 +186,7 @@ class SpinnerWheelState extends State<SpinnerWheel>
                 imageWidth: widget.imageWidth,
                 labelStyle: widget.labelStyle,
                 curve: _currentCurve,
+                zoomController: widget.zoomController,
                 // Ensure WheelDisplay fits our calculated size
                 minSize: wheelSize,
                 maxSize: wheelSize,

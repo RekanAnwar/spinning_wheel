@@ -142,6 +142,7 @@ class WheelDisplay extends StatelessWidget {
   final double maxSize;
   final double aspectRatio;
   final Curve curve;
+  final AnimationController? zoomController;
 
   const WheelDisplay({
     super.key,
@@ -160,6 +161,7 @@ class WheelDisplay extends StatelessWidget {
     this.maxSize = double.infinity,
     this.aspectRatio = 1.0,
     this.curve = Curves.easeOutCirc,
+    this.zoomController,
   });
 
   @override
@@ -189,7 +191,7 @@ class WheelDisplay extends StatelessWidget {
   }
 
   Widget _buildWheel(double size) {
-    return Stack(
+    final wheelStack = Stack(
       alignment: Alignment.center,
       clipBehavior: Clip.none,
       children: [
@@ -262,6 +264,30 @@ class WheelDisplay extends StatelessWidget {
         ),
       ],
     );
+
+    // If zoomController is provided, apply zoom animation
+    if (zoomController != null) {
+      return AnimatedBuilder(
+        animation: zoomController!,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: Tween<double>(begin: 1.0, end: 2.0)
+                .animate(
+                  CurvedAnimation(
+                    parent: zoomController!,
+                    curve: Curves.easeInOutCubic,
+                  ),
+                )
+                .value,
+            alignment: Alignment.topCenter,
+            child: child,
+          );
+        },
+        child: wheelStack,
+      );
+    }
+
+    return wheelStack;
   }
 
   Widget _buildIndicator(double size) {

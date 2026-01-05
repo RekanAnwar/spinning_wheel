@@ -28,12 +28,12 @@ class GameScreen extends StatefulWidget {
   State<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen>
-    with SingleTickerProviderStateMixin {
+class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   // double _startRotation = 0.0;
   // double _endRotation = 0.0;
 
   SpinnerController controller = SpinnerController();
+  late AnimationController _zoomController;
 
   bool _isSpinning = false;
   String _result = 'spin the wheel';
@@ -64,8 +64,17 @@ class _GameScreenState extends State<GameScreen>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    _zoomController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+  }
+
+  @override
+  void dispose() {
+    _zoomController.dispose();
+    super.dispose();
   }
 
   Future<void> _spinWheel() async {
@@ -77,6 +86,9 @@ class _GameScreenState extends State<GameScreen>
       _result = "Getting result from server...";
       _showConfetti = false;
     });
+
+    // Reset zoom
+    _zoomController.reset();
 
     // 1. Start simulated "loading" spin (infinite)
     controller.startLoadingSpin();
@@ -95,6 +107,9 @@ class _GameScreenState extends State<GameScreen>
 
     // 4. Smoothly transition to the result
     await controller.spinToIndex(serverWinningIndex);
+
+    // 5. Trigger full-screen zoom animation after spin completes and stay zoomed
+    await _zoomController.forward();
   }
 
   void _showGameOverDialog() {
@@ -177,7 +192,10 @@ class _GameScreenState extends State<GameScreen>
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFA64D32), Color(0xFFEC5D44)],
+            colors: [
+              Color(0xFFE8F4F8), // Light cyan at top
+              Color(0xFFFFFFFF), // White at bottom
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -187,89 +205,73 @@ class _GameScreenState extends State<GameScreen>
             children: [
               Column(
                 children: [
+                  // App bar with back button
                   Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 18,
-                            vertical: 10,
-                          ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.3),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.attach_money, color: Colors.amber),
-                              SizedBox(width: 4),
-                              Text(
-                                _score.toString(),
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
                               ),
                             ],
                           ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 18,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.3),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.refresh, color: Colors.amber),
-                              SizedBox(width: 4),
-                              Text(
-                                _spinsRemaining.toString(),
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_back, color: Colors.black),
+                            onPressed: () {},
                           ),
                         ),
                       ],
                     ),
                   ),
+                  SizedBox(height: 10),
+                  // Title
                   Text(
-                    "Spinner Game",
+                    "SPIN",
                     style: TextStyle(
-                      color: Colors.white,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      fontSize: 30,
-                      letterSpacing: 1.5,
-                      shadows: [
-                        BoxShadow(
-                          blurRadius: 10,
-                          color: Colors.black45,
-                          offset: Offset(2, 2),
-                        ),
-                      ],
+                      color: Colors.black,
+                      letterSpacing: 2,
                     ),
                   ),
                   SizedBox(height: 20),
+                  // Subtitle
+                  Text(
+                    "Win with Korek",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1B5E5E),
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  // Description
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 40),
+                    child: Text(
+                      "You have earned $_spinsRemaining spin,\nspin the wheel to earn prizes",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  // Spinning Wheel
                   SizedBox(
-                    width: size.width - 20,
+                    width: size.width - 40,
                     child: SpinnerWheel(
                       controller: controller,
+                      zoomController: _zoomController,
                       segments: _segments,
                       onComplete: (win, index) {
                         print("index......$index");
@@ -340,53 +342,31 @@ class _GameScreenState extends State<GameScreen>
                   // SizedBox(
                   //   height: 20,
                   // ),
-                  const SizedBox(
-                    height: 100,
-                  ),
+                  const Spacer(),
+                  // Spin Button
                   Padding(
-                    padding: EdgeInsets.only(bottom: 10, top: 20),
-                    child: AnimatedContainer(
-                      duration: Duration(milliseconds: 200),
-                      height: 60,
-                      width: 250,
-                      transform: Matrix4.identity()
-                        ..scale(_isSpinning ? 0.9 : 1.0),
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 56,
                       child: ElevatedButton(
                         onPressed: _isSpinning ? null : _spinWheel,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _isSpinning ? Colors.grey : Colors.amber,
-                          foregroundColor: Colors.brown.shade900,
-                          padding: EdgeInsets.symmetric(
-                            vertical: 15,
-                            horizontal: 30,
-                          ),
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(28),
                           ),
-                          elevation: _isSpinning ? 3 : 10,
-                          shadowColor: Colors.black.withValues(alpha: 0.5),
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              _isSpinning
-                                  ? Icons.hourglass_top
-                                  : Icons.touch_app,
-                              size: 28,
-                              color: Colors.white,
-                            ),
-                            SizedBox(width: 10),
-                            Text(
-                              _isSpinning ? "spinning..." : "spin!",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          _isSpinning ? "Spinning..." : "Spin The Wheel",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ),
