@@ -1,0 +1,26 @@
+name: spinning_wheel
+description: "A customizable and animated spinning wheel for Flutter, perfect for games, lucky draws, and prize wheels."
+version: 0.0.3
+homepage: https://github.com/nitesh695/spinning_wheel
+repository: https://github.com/nitesh695/spinning_wheel
+issue_tracker: https://github.com/nitesh695/spinning_wheel/issues
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  assets:
+    - assets/
+    - assets/stand.png
+
+license: MIT
