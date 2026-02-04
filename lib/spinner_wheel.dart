@@ -124,7 +124,7 @@ class SpinnerWheelState extends State<SpinnerWheel>
     // This is equivalent to T = 2 * D / (2*pi)
 
     final totalRotateAmount = _endRotation - _startRotation;
-    final initialVelocity = 2 * pi; // Matches loading speed (1 rev/sec)
+    const initialVelocity = 2 * pi; // Matches loading speed (1 rev/sec)
 
     // Duration = 2 * Distance / InitialVelocity
     final durationSeconds = (2 * totalRotateAmount) / initialVelocity;

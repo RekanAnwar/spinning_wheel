@@ -1,3 +1,4 @@
+import 'dart:developer' as dev;
 import 'dart:math'; // For random number generation
 
 import 'package:flutter/material.dart';
@@ -9,6 +10,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,30 +39,30 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   late AnimationController _zoomController;
 
   bool _isSpinning = false;
-  String _result = 'spin the wheel';
+  // String _result = 'spin the wheel';
   int _score = 0;
   //total spins
   int _spinsRemaining = 5;
-  bool _showConfetti = false;
+  // bool _showConfetti = false;
 
   final List<WheelSegment> _segments = [
-    WheelSegment('+1 spin', const Color(0xFFB21E25), 1,
-        path: 'assets/images/coala.png'), // Soft White
-    WheelSegment('50', const Color(0xFFFFEAB9), 50,
-        path: 'assets/images/bunny.png'), // Royal Blue
-    WheelSegment('200', const Color(0xFFB21E25), 200,
-        path: 'assets/images/lion.png'), // Emerald Green
-    WheelSegment('10', const Color(0xFFFFEAB9), 10,
-        path: 'assets/images/cheeseMouse.png'), // Gold
+    WheelSegment('+1 spin', const Color(0xFF004FA8), 1,
+        path: 'assets/images/coala.png'),
+    WheelSegment('50', const Color(0xFF47A2BA), 50,
+        path: 'assets/images/bunny.png'),
+    WheelSegment('200', const Color(0xFF007277), 200,
+        path: 'assets/images/lion.png'),
+    WheelSegment('10', const Color(0xFF002B49), 10,
+        path: 'assets/images/cheeseMouse.png'),
     WheelSegment(
       'Network Img',
-      const Color(0xFFB21E25),
+      const Color(0xFF004FA8),
       0,
       path:
           'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-    ), // Bright Orange
-    WheelSegment('LOSE ALL', const Color(0xFFFFEAB9), -9999,
-        path: 'assets/images/bat.png'), // Deep Chocolate Brown
+    ),
+    WheelSegment('LOSE ALL', const Color(0xFF47A2BA), -9999,
+        path: 'assets/images/bat.png'),
   ];
 
   @override
@@ -83,8 +86,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     setState(() {
       _spinsRemaining--;
       _isSpinning = true;
-      _result = "Getting result from server...";
-      _showConfetti = false;
+      // _result = "Getting result from server...";
+      // _showConfetti = false;
     });
 
     // Reset zoom
@@ -102,7 +105,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     final serverWinningIndex = random.nextInt(_segments.length);
 
     final winningSegment = _segments[serverWinningIndex];
-    print(
+    dev.log(
         "Server says winner is: ${winningSegment.label} (Index: $serverWinningIndex)");
 
     // 4. Smoothly transition to the result
@@ -114,6 +117,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   void _showGameOverDialog() {
     Future.delayed(Duration(milliseconds: 500), () {
+      if (!mounted) return;
+
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -180,8 +185,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     setState(() {
       _score = 0;
       _spinsRemaining = 5;
-      _result = "spin the wheel";
-      _showConfetti = false;
+      // _result = "spin the wheel";
+      // _showConfetti = false;
     });
   }
 
@@ -193,185 +198,184 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFFE8F4F8), // Light cyan at top
-              Color(0xFFFFFFFF), // White at bottom
+              Color(0xFF59CBE8), // Light cyan at top
+              Color(0xFF003460), // White at bottom
+              Color(0xFF003460), // White at bottom
             ],
+            stops: [0.05, 0.7, 1],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
         child: SafeArea(
-          child: Stack(
+          child: ListView(
+            padding: EdgeInsets.all(20),
             children: [
-              Column(
-                children: [
-                  // App bar with back button
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: Row(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
+              // App bar with back button
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
                           ),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.black),
-                            onPressed: () {},
-                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_back, color: Colors.black),
+                        onPressed: () {},
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+              // Title
+              Text(
+                "SPIN",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 2,
+                ),
+              ),
+              SizedBox(height: 20),
+              // Subtitle
+              Text(
+                "Win with Korek",
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 8),
+              // Description
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 40),
+                child: Text(
+                  "You have earned $_spinsRemaining spin,\nspin the wheel to earn prizes",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+              SizedBox(height: 30),
+              // Spinning Wheel with Stand - wrapped together for zoom animation
+              AnimatedBuilder(
+                animation: _zoomController,
+                builder: (context, child) => Transform.scale(
+                  alignment: Alignment.topCenter,
+                  scale: Tween<double>(begin: 1.0, end: 2.0)
+                      .animate(
+                        CurvedAnimation(
+                          parent: _zoomController,
+                          curve: Curves.easeInOutCubic,
                         ),
-                      ],
-                    ),
+                      )
+                      .value,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: size.width - 40,
+                        child: SpinnerWheel(
+                          showStand: true,
+                          segments: _segments,
+                          zoomController: null,
+                          controller: controller,
+                          onComplete: (win, index) {
+                            setState(() {
+                              // if (win.value == -9999) {
+                              //   _score = 0;
+                              //   _result = "you lost All";
+                              //   _showConfetti = false;
+                              // } else if (win.value == 1) {
+                              //   _result = 'you got 1 spin';
+                              //   _spinsRemaining++;
+                              //   _showConfetti = false;
+                              // } else if (win.value > 200) {
+                              //   _score += win.value;
+                              //   _result = 'you won ${win.label}!';
+                              //   _showConfetti = true;
+                              // } else {
+                              //   _score += win.value;
+                              //   _result = "you won ${win.label}!";
+                              //   _showConfetti = win.value >= 500;
+                              // }
+
+                              _isSpinning = false;
+
+                              if (_spinsRemaining <= 0) {
+                                _showGameOverDialog();
+                              }
+                            });
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 10),
-                  // Title
-                  Text(
-                    "SPIN",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      letterSpacing: 2,
+                ),
+              ),
+              //             BoxShadow(
+              //               color: Colors.amber.withValues(alpha: 0.5),
+              //               blurRadius: 10,
+              //               spreadRadius: 2,
+              //             ),
+              //           ]
+              //         : [],
+              //   ),
+              //   child: Text(
+              //     _result,
+              //     textAlign: TextAlign.center,
+              //     style: TextStyle(
+              //       color: _showConfetti
+              //           ? Colors.brown.shade900
+              //           : Colors.white,
+              //       fontSize: 22,
+              //       fontWeight: FontWeight.bold,
+              //     ),
+              //   ),
+              // ),
+              SizedBox(height: 100),
+
+              // Spin Button
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _isSpinning ? null : _spinWheel,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                      elevation: 0,
+                      shadowColor: Colors.transparent,
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  // Subtitle
-                  Text(
-                    "Win with Korek",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1B5E5E),
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  // Description
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 40),
                     child: Text(
-                      "You have earned $_spinsRemaining spin,\nspin the wheel to earn prizes",
-                      textAlign: TextAlign.center,
+                      _isSpinning ? "Spinning..." : "Spin The Wheel",
                       style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                        height: 1.5,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
                       ),
                     ),
                   ),
-                  SizedBox(height: 30),
-                  // Spinning Wheel
-                  SizedBox(
-                    width: size.width - 40,
-                    child: SpinnerWheel(
-                      controller: controller,
-                      zoomController: _zoomController,
-                      segments: _segments,
-                      onComplete: (win, index) {
-                        print("index......$index");
-                        setState(() {
-                          if (win.value == -9999) {
-                            _score = 0;
-                            _result = "you lost All";
-                            _showConfetti = false;
-                          } else if (win.value == 1) {
-                            _result = 'you got 1 spin';
-                            _spinsRemaining++;
-                            _showConfetti = false;
-                          } else if (win.value > 200) {
-                            _score += win.value;
-                            _result = 'you won ${win.label}!';
-                            _showConfetti = true;
-                          } else {
-                            _score += win.value;
-                            _result = "you won ${win.label}!";
-                            _showConfetti = win.value >= 500;
-                          }
-
-                          _isSpinning = false;
-
-                          if (_spinsRemaining <= 0) {
-                            _showGameOverDialog();
-                          }
-                        });
-                      },
-                    ),
-                  ),
-
-                  // AnimatedContainer(
-                  //   duration: Duration(milliseconds: 300),
-                  //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  //   decoration: BoxDecoration(
-                  //     color: _showConfetti
-                  //         ? Colors.amber.withValues(alpha: 0.9)
-                  //         : Colors.white.withValues(alpha: 0.2),
-                  //     borderRadius: BorderRadius.circular(12),
-                  //     border: Border.all(
-                  //       color: _showConfetti
-                  //           ? Colors.amber.shade700
-                  //           : Colors.white.withValues(alpha: 0.3),
-                  //     ),
-                  //     boxShadow: _showConfetti
-                  //         ? [
-                  //             BoxShadow(
-                  //               color: Colors.amber.withValues(alpha: 0.5),
-                  //               blurRadius: 10,
-                  //               spreadRadius: 2,
-                  //             ),
-                  //           ]
-                  //         : [],
-                  //   ),
-                  //   child: Text(
-                  //     _result,
-                  //     textAlign: TextAlign.center,
-                  //     style: TextStyle(
-                  //       color: _showConfetti
-                  //           ? Colors.brown.shade900
-                  //           : Colors.white,
-                  //       fontSize: 22,
-                  //       fontWeight: FontWeight.bold,
-                  //     ),
-                  //   ),
-                  // ),
-                  // SizedBox(
-                  //   height: 20,
-                  // ),
-                  const Spacer(),
-                  // Spin Button
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: _isSpinning ? null : _spinWheel,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
-                          ),
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                        ),
-                        child: Text(
-                          _isSpinning ? "Spinning..." : "Spin The Wheel",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ],
           ),
