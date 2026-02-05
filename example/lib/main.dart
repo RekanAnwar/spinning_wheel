@@ -46,23 +46,114 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   // bool _showConfetti = false;
 
   final List<WheelSegment> _segments = [
-    WheelSegment('+1 spin', const Color(0xFF004FA8), 1,
-        path: 'assets/images/coala.png'),
-    WheelSegment('50', const Color(0xFF47A2BA), 50,
-        path: 'assets/images/bunny.png'),
-    WheelSegment('200', const Color(0xFF007277), 200,
-        path: 'assets/images/lion.png'),
-    WheelSegment('10', const Color(0xFF002B49), 10,
-        path: 'assets/images/cheeseMouse.png'),
     WheelSegment(
-      'Network Img',
-      const Color(0xFF004FA8),
-      0,
+      label: '20,000 د.ع',
+      color: Color.fromARGB(
+        255,
+        Random().nextInt(256),
+        Random().nextInt(256),
+        Random().nextInt(256),
+      ),
+      value: 5,
       path:
-          'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
+          'https://minio.a.trytiptop.app/public/public/c1b46fd0-8fb6-4206-930b-5230d2ce732d.png',
     ),
-    WheelSegment('LOSE ALL', const Color(0xFF47A2BA), -9999,
-        path: 'assets/images/bat.png'),
+    WheelSegment(
+      label: 'New Bashar Seafood Branch Coupon',
+      color: Color.fromARGB(
+        255,
+        Random().nextInt(256),
+        Random().nextInt(256),
+        Random().nextInt(256),
+      ),
+      value: 500,
+      path:
+          'https://minio.a.trytiptop.app/public/public/e3000311-a99b-49bd-8ec6-7df21c562226.png',
+    ),
+    WheelSegment(
+      label: '1000',
+      color: Color.fromARGB(
+        255,
+        Random().nextInt(256),
+        Random().nextInt(256),
+        Random().nextInt(256),
+      ),
+      value: 1000,
+      path:
+          'https://minio.a.trytiptop.app/public/public/e3000311-a99b-49bd-8ec6-7df21c562226.png',
+    ),
+    WheelSegment(
+      label: '-100',
+      color: Color.fromARGB(
+        255,
+        Random().nextInt(256),
+        Random().nextInt(256),
+        Random().nextInt(256),
+      ),
+      value: -100,
+      path:
+          'https://minio.a.trytiptop.app/public/public/c1b46fd0-8fb6-4206-930b-5230d2ce732d.png',
+    ),
+    WheelSegment(
+      label: 'Network Img',
+      color: Color.fromARGB(
+        255,
+        Random().nextInt(256),
+        Random().nextInt(256),
+        Random().nextInt(256),
+      ),
+      value: 0,
+      path:
+          'https://minio.a.trytiptop.app/public/public/e3000311-a99b-49bd-8ec6-7df21c562226.png',
+    ),
+    WheelSegment(
+      label: 'Free Spin',
+      color: Color.fromARGB(
+        255,
+        Random().nextInt(256),
+        Random().nextInt(256),
+        Random().nextInt(256),
+      ),
+      value: -9999,
+      path:
+          'https://minio.a.trytiptop.app/public/public/2c3c11d8-864b-4ce2-bd2f-697db6126f02.png',
+    ),
+    WheelSegment(
+      label: 'Free Spin',
+      color: Color.fromARGB(
+        255,
+        Random().nextInt(256),
+        Random().nextInt(256),
+        Random().nextInt(256),
+      ),
+      value: -9999,
+      path:
+          'https://minio.a.trytiptop.app/public/public/4d7397e8-6168-439d-8cb6-c07fb2a5d545.png',
+    ),
+    WheelSegment(
+      label: 'Free Spin',
+      color: Color.fromARGB(
+        255,
+        Random().nextInt(256),
+        Random().nextInt(256),
+        Random().nextInt(256),
+      ),
+      value: -9999,
+      path:
+          'https://minio.a.trytiptop.app/public/public/2c3c11d8-864b-4ce2-bd2f-697db6126f02.png',
+    ),
+    WheelSegment(
+      label: 'Free Spin',
+      color: Color.fromARGB(
+        255,
+        Random().nextInt(256),
+        Random().nextInt(256),
+        Random().nextInt(256),
+      ),
+      value: -9999,
+      path:
+          'https://minio.a.trytiptop.app/public/public/4d7397e8-6168-439d-8cb6-c07fb2a5d545.png',
+    ),
   ];
 
   @override

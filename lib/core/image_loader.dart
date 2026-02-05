@@ -1,5 +1,7 @@
-import 'package:flutter/services.dart';
 import 'dart:ui' as ui;
+
+import 'package:flutter/services.dart';
+
 import '../models/wheel_segment.dart';
 
 Future<ui.Image> loadImage(String path) async {
@@ -22,9 +24,9 @@ Future<List<WheelSegment>> loadSegmentImages(
   for (var segment in segments) {
     if ((segment.path ?? '').isNotEmpty) {
       processedSegments.add(WheelSegment(
-        segment.label,
-        segment.color,
-        segment.value,
+        label: segment.label,
+        color: segment.color,
+        value: segment.value,
         path: segment.path,
         image: await loadImage(segment.path!),
       ));

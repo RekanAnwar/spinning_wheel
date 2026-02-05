@@ -21,17 +21,37 @@ class WheelPainter extends CustomPainter {
     final double startAngle = -pi / 2 - segmentAngle / 40;
 
     for (int i = 0; i < segments.length; i++) {
-      _drawSegment(canvas, rect, startAngle + i * segmentAngle, segmentAngle,
-          segments[i]);
-      _drawImage(canvas, radius, startAngle + i * segmentAngle, segmentAngle,
-          segments[i]);
-      _drawLabel(canvas, radius, startAngle + i * segmentAngle, segmentAngle,
-          segments[i]);
+      _drawSegment(
+        canvas,
+        rect,
+        startAngle + i * segmentAngle,
+        segmentAngle,
+        segments[i],
+      );
+      _drawImage(
+        canvas,
+        radius,
+        startAngle + i * segmentAngle,
+        segmentAngle,
+        segments[i],
+      );
+      _drawLabel(
+        canvas,
+        radius,
+        startAngle + i * segmentAngle,
+        segmentAngle,
+        segments[i],
+      );
     }
   }
 
-  void _drawSegment(Canvas canvas, Rect rect, double angle, double segmentAngle,
-      WheelSegment segment) {
+  void _drawSegment(
+    Canvas canvas,
+    Rect rect,
+    double angle,
+    double segmentAngle,
+    WheelSegment segment,
+  ) {
     final Paint segmentPaint = Paint()
       ..color = segment.color
       ..style = PaintingStyle.fill;
@@ -43,8 +63,13 @@ class WheelPainter extends CustomPainter {
     canvas.drawArc(rect, angle, segmentAngle, true, segmentPaint);
   }
 
-  void _drawImage(Canvas canvas, double radius, double angle,
-      double segmentAngle, WheelSegment segment) {
+  void _drawImage(
+    Canvas canvas,
+    double radius,
+    double angle,
+    double segmentAngle,
+    WheelSegment segment,
+  ) {
     if (segment.image != null) {
       final double imageRadius = radius * 0.55;
       final Offset imageCenter = Offset(
@@ -69,32 +94,144 @@ class WheelPainter extends CustomPainter {
     }
   }
 
-  void _drawLabel(Canvas canvas, double radius, double angle,
-      double segmentAngle, WheelSegment segment) {
-    final double labelRadius = radius * 0.75;
-    final Offset labelCenter = Offset(
-      radius + cos(angle + segmentAngle / 2) * labelRadius,
-      radius + sin(angle + segmentAngle / 2) * labelRadius,
+  void _drawLabel(
+    Canvas canvas,
+    double radius,
+    double angle,
+    double segmentAngle,
+    WheelSegment segment,
+  ) {
+    final double labelRadius = radius * 0.8;
+    final String text = segment.label;
+    final TextStyle baseTextStyle = style ??
+        TextStyle(
+          color: ThemeData.estimateBrightnessForColor(segment.color) ==
+                  Brightness.dark
+              ? Colors.white
+              : Colors.black,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        );
+
+    // Calculate maximum characters that can fit in one line
+    final double maxCharsPerLine =
+        (segmentAngle * labelRadius) / (baseTextStyle.fontSize! * 0.6);
+
+    // Split text into lines if too long
+    final List<String> lines =
+        _splitTextIntoLines(text, maxCharsPerLine.floor());
+
+    // Adjust font size based on number of lines and text length
+    final double scaleFactor =
+        _calculateScaleFactor(lines, segmentAngle, labelRadius);
+    final TextStyle textStyle = baseTextStyle.copyWith(
+      fontSize: (baseTextStyle.fontSize! * scaleFactor).clamp(
+        8.0,
+        baseTextStyle.fontSize!,
+      ),
     );
 
     canvas.save();
-    canvas.translate(labelCenter.dx, labelCenter.dy);
-    canvas.rotate(angle + segmentAngle / 2 + pi / 2);
 
-    TextPainter textPainter = TextPainter(
-      text: TextSpan(
-        text: segment.label,
-        style: style ??
-            const TextStyle(
-                color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-      ),
-      textDirection: TextDirection.ltr,
-    );
+    for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+      final String line = lines[lineIndex];
+      final List<String> characters = line.split('');
 
-    textPainter.layout();
-    textPainter.paint(
-        canvas, Offset(-textPainter.width / 2, -textPainter.height / 2));
+      // Adjust radius for multi-line text
+      final double lineRadius =
+          labelRadius - (lineIndex * textStyle.fontSize! * 0.8);
+
+      // Calculate starting angle to center the text
+      final double totalTextAngle =
+          characters.length * textStyle.fontSize! * 0.6 / lineRadius;
+      final double startAngle = angle + (segmentAngle - totalTextAngle) / 2;
+      final double charAngleStep = textStyle.fontSize! * 0.6 / lineRadius;
+
+      for (int i = 0; i < characters.length; i++) {
+        final double charAngle =
+            startAngle + charAngleStep * i + charAngleStep / 2;
+        final Offset charCenter = Offset(
+          radius + cos(charAngle) * lineRadius,
+          radius + sin(charAngle) * lineRadius,
+        );
+
+        canvas.save();
+        canvas.translate(charCenter.dx, charCenter.dy);
+        canvas.rotate(charAngle + pi / 2);
+
+        TextPainter textPainter = TextPainter(
+          text: TextSpan(
+            text: characters[i],
+            style: textStyle,
+          ),
+          textDirection: TextDirection.ltr,
+        );
+
+        textPainter.layout();
+        textPainter.paint(
+          canvas,
+          Offset(-textPainter.width / 2, -textPainter.height / 2),
+        );
+        canvas.restore();
+      }
+    }
+
     canvas.restore();
+  }
+
+  List<String> _splitTextIntoLines(String text, int maxCharsPerLine) {
+    if (text.length <= maxCharsPerLine) return [text];
+
+    final List<String> words = text.split(' ');
+    final List<String> lines = [];
+    String currentLine = '';
+
+    for (String word in words) {
+      if (('$currentLine $word').length <= maxCharsPerLine) {
+        currentLine = currentLine.isEmpty ? word : '$currentLine $word';
+      } else {
+        if (currentLine.isNotEmpty) {
+          lines.add(currentLine);
+          currentLine = word;
+        } else {
+          // Word is too long, split it
+          for (int i = 0; i < word.length; i += maxCharsPerLine) {
+            final int end = (i + maxCharsPerLine).clamp(0, word.length);
+            lines.add(word.substring(i, end));
+          }
+        }
+      }
+    }
+
+    if (currentLine.isNotEmpty) {
+      lines.add(currentLine);
+    }
+
+    return lines;
+  }
+
+  double _calculateScaleFactor(
+    List<String> lines,
+    double segmentAngle,
+    double labelRadius,
+  ) {
+    int maxLineLength =
+        lines.map((line) => line.length).reduce((a, b) => a > b ? a : b);
+    double totalTextWidth = maxLineLength * 16.0 * 0.6; // estimated width
+    double availableWidth = segmentAngle * labelRadius;
+
+    if (totalTextWidth > availableWidth) {
+      return availableWidth / totalTextWidth;
+    }
+
+    // Additional scaling for multiple lines
+    if (lines.length > 2) {
+      return 0.7;
+    } else if (lines.length > 1) {
+      return 0.85;
+    }
+
+    return 1.0;
   }
 
   @override

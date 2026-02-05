@@ -118,7 +118,7 @@ class WheelDisplay extends StatelessWidget {
                               segments,
                               imageHeight: imageHeight ?? (size * 0.11),
                               imageWidth: imageWidth ?? (size * 0.11),
-                              style: _getResponsiveLabelStyle(size),
+                              style: labelStyle,
                             ),
                           ),
                         ),
