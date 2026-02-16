@@ -66,10 +66,56 @@ class SpinnerWheelState extends State<SpinnerWheel>
     super.initState();
   }
 
-  void processSegments() async {
-    processedSegments = await loadSegmentImages(widget.segments);
-    if (mounted) {
-      setState(() {});
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Precache critical assets for smoother performance
+    precacheImage(
+      const AssetImage('assets/stand.png', package: 'spinning_wheel'),
+      context,
+    );
+    precacheImage(
+      const AssetImage('assets/backround.png', package: 'spinning_wheel'),
+      context,
+    );
+    precacheImage(
+      const AssetImage(
+        'assets/center_indicator.png',
+        package: 'spinning_wheel',
+      ),
+      context,
+    );
+  }
+
+  void processSegments() {
+    // Initialize with original segments immediately so they display
+    processedSegments = List.from(widget.segments);
+    if (mounted) setState(() {});
+
+    final int? cacheWidth = widget.imageWidth?.toInt();
+    final int? cacheHeight = widget.imageHeight?.toInt();
+
+    // Load images incrementally
+    for (int i = 0; i < widget.segments.length; i++) {
+      final segment = widget.segments[i];
+      if ((segment.path ?? '').isNotEmpty) {
+        loadImage(segment.path!, width: cacheWidth, height: cacheHeight)
+            .then((image) {
+          if (mounted) {
+            setState(() {
+              processedSegments[i] = WheelSegment(
+                label: segment.label,
+                color: segment.color,
+                value: segment.value,
+                path: segment.path,
+                image: image,
+              );
+            });
+          }
+        }).catchError((e) {
+          debugPrint('Error loading image for segment ${segment.label}: $e');
+        });
+      }
     }
   }
 

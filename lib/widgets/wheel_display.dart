@@ -185,15 +185,4 @@ class WheelDisplay extends StatelessWidget {
 
     return wheelStack;
   }
-
-  TextStyle? _getResponsiveLabelStyle(double size) {
-    if (labelStyle != null) return labelStyle;
-
-    // Provide a default responsive text style
-    return TextStyle(
-      fontSize: size * 0.025, // Responsive font size
-      fontWeight: FontWeight.bold,
-      color: Colors.black,
-    );
-  }
 }
